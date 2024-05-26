@@ -7,8 +7,8 @@
 #include "Auth.hpp"
 #include "network/HttpRequest.h"
 
-using namespace cocos2d;
-using namespace cocos2d::network;
+using namespace ax;
+using namespace ax::network;
 
 Auth::Auth(std::string endpoint)
 {
@@ -75,7 +75,7 @@ void Auth::request(HttpRequest::Type method, std::string segments, std::vector<s
         req->setRequestData(upload.c_str(), upload.length());
     }
 
-    req->setResponseCallback(CC_CALLBACK_2(Auth::onHttpRequestCompleted, this));
+    req->setResponseCallback(AX_CALLBACK_2(Auth::onHttpRequestCompleted, this));
 
     HttpClient::getInstance()->send(req);
 
@@ -89,15 +89,15 @@ void Auth::onHttpRequestCompleted(HttpClient * client, HttpResponse * response)
 
 std::string Auth::getPlatform()
 {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#if AX_TARGET_PLATFORM == AX_PLATFORM_MAC
     return "mac";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+#elif AX_TARGET_PLATFORM == AX_PLATFORM_IOS
     return "ios";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+#elif AX_TARGET_PLATFORM == AX_PLATFORM_ANDROID
     return "android";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#elif AX_TARGET_PLATFORM == AX_PLATFORM_WIN32
     return "windows";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+#elif AX_TARGET_PLATFORM == AX_PLATFORM_LINUX
     return "linux";
 #endif
 }

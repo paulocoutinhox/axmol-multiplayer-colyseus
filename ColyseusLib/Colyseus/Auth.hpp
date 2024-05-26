@@ -1,13 +1,12 @@
-#ifndef Auth_hpp
-#define Auth_hpp
+#pragma once
 
 #include <stdio.h>
 #include <vector>
 
-#include "cocos2d.h"
+#include "axmol.h"
 #include "network/HttpClient.h"
 
-using namespace cocos2d::network;
+using namespace ax::network;
 
 class Auth : public ax::Object
 {
@@ -71,5 +70,3 @@ protected:
     std::string urlencode(const std::string &value);
     std::string string_join(const std::vector<std::string> &elements, const std::string &separator);
 };
-
-#endif /* Auth_hpp */

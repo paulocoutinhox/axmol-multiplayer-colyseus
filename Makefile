@@ -29,7 +29,11 @@ help:
 
 format:
 	find -E Source/ -not -path '*/vendor/*' -regex '.*\.(cpp|hpp|cc|cxx|c|h)' -exec clang-format -style=file -i {} \;
-	#find -E ColyseusLib/ -regex '.*\.(cpp|hpp|cc|cxx|c|h)' -exec clang-format -style=file -i {} \;
+	find -E ColyseusLib/ -regex '.*\.(cpp|hpp|cc|cxx|c|h)' \
+    -not -path "ColyseusLib/msgpack/*" \
+    -not -path "ColyseusLib/thirdparty/*" \
+    -not -path "ColyseusLib/Colyseus/Serializer/*" \
+    -exec clang-format -style=file -i {} \;
 
 clean:
 	rm -rf build_*
