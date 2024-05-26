@@ -2,8 +2,9 @@
 
 #include "axmol.h"
 
-#include "colyseus/Client.hpp"
-#include "colyseus/Room.hpp"
+#include "Colyseus/Client.hpp"
+#include "Colyseus/Room.hpp"
+#include "ColyseusData/RoomState.hpp"
 
 class MainScene : public ax::Scene {
     enum class GameState {
@@ -18,8 +19,8 @@ public:
 private:
     GameState _gameState = GameState::init;
 
-    colyseus::Client *client;
-    colyseus::Room *room;
+    Client *client;
+    Room<RoomState> *room;
     ax::Sprite *playerSprite;
     std::map<std::string, ax::Sprite *> playerSprites;
 
