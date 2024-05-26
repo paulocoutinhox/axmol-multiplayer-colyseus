@@ -20,14 +20,14 @@ bool MainScene::init() {
 
     // add keyboard event listener
     auto eventListener = EventListenerKeyboard::create();
-    eventListener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
-    eventListener->onKeyReleased = CC_CALLBACK_2(MainScene::onKeyReleased, this);
+    eventListener->onKeyPressed = AX_CALLBACK_2(MainScene::onKeyPressed, this);
+    eventListener->onKeyReleased = AX_CALLBACK_2(MainScene::onKeyReleased, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
 
     // add touch event listener
     auto touchListener = EventListenerTouchOneByOne::create();
-    touchListener->onTouchBegan = CC_CALLBACK_2(MainScene::onTouchBegan, this);
-    touchListener->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
+    touchListener->onTouchBegan = AX_CALLBACK_2(MainScene::onTouchBegan, this);
+    touchListener->onTouchEnded = AX_CALLBACK_2(MainScene::onTouchEnded, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
     // schedule update to always run

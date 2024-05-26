@@ -1,13 +1,4 @@
-//
-//  Client.hpp
-//  CocosEngine
-//
-//  Created by Hung Hoang Manh on 3/22/17.
-//
-//
-
-#ifndef Client_hpp
-#define Client_hpp
+#pragma once
 
 #include <stdio.h>
 
@@ -22,8 +13,8 @@
 
 // #include "Auth.hpp"
 
-using namespace cocos2d;
-using namespace cocos2d::network;
+using namespace ax;
+using namespace ax::network;
 
 typedef nlohmann::json JoinOptions;
 
@@ -41,7 +32,7 @@ public:
     std::string message;
 };
 
-class Client : public cocos2d::Ref
+class Client : public ax::Object
 {
 public:
     std::string endpoint;
@@ -160,7 +151,7 @@ protected:
             }
         });
 
-        cocos2d::network::HttpClient::getInstance()->send(req);
+        ax::network::HttpClient::getInstance()->send(req);
         req->release();
     }
 
@@ -170,5 +161,3 @@ protected:
     }
 
 };
-
-#endif /* Client_hpp */

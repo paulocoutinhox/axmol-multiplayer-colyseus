@@ -1,5 +1,4 @@
-#ifndef Room_hpp
-#define Room_hpp
+#pragma once
 
 #include <stdio.h>
 #include "Protocol.hpp"
@@ -36,9 +35,9 @@ public:
     void connect(Connection *connection)
     {
         this->connection = connection;
-        this->connection->_onClose = CC_CALLBACK_0(Room::_onClose, this);
-        this->connection->_onError = CC_CALLBACK_2(Room::_onError, this);
-        this->connection->_onMessage = CC_CALLBACK_1(Room::_onMessage, this);
+        this->connection->_onClose = std::bind(&Room::_onClose, this);
+        this->connection->_onError = std::bind(&Room::_onError, this, std::placeholders::_1, std::placeholders::_2);
+        this->connection->_onMessage = std::bind(&Room::_onMessage, this, std::placeholders::_1);
         this->connection->open();
     }
 
@@ -72,50 +71,55 @@ public:
     }
 
     template <typename T>
-    inline void send (const int32_t& type, T message)
+    inline void send(const int32_t& type, T message)
     {
         std::stringstream ss;
         msgpack::pack(ss, message);
-
         std::string encoded = ss.str();
+        size_t encodedLength = encoded.length();
 
-        unsigned char bytesToSend[encoded.length() + 2];
-        bytesToSend[0] = (int) Protocol::ROOM_DATA;
+        unsigned char* bytesToSend = new unsigned char[encodedLength + 2];
+        bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
         bytesToSend[1] = type;
-        memcpy(bytesToSend + 2, encoded.c_str(), encoded.length());
+        memcpy(bytesToSend + 2, encoded.c_str(), encodedLength);
 
-        this->connection->send(bytesToSend, sizeof(bytesToSend));
+        this->connection->send(bytesToSend, encodedLength + 2);
+        delete[] bytesToSend;
     }
 
-    inline void send (const std::string& type)
+    inline void send(const std::string& type)
     {
         const char* typeBytes = type.c_str();
+        size_t typeLength = strlen(typeBytes);
 
-        unsigned char bytesToSend[2 + strlen(typeBytes)];
-        bytesToSend[0] = (int) Protocol::ROOM_DATA;
-        bytesToSend[1] = type.size() | 0xa0;
-        memcpy(bytesToSend + 2, typeBytes, sizeof(typeBytes));
+        unsigned char* bytesToSend = new unsigned char[2 + typeLength];
+        bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
+        bytesToSend[1] = typeLength | 0xa0;
+        memcpy(bytesToSend + 2, typeBytes, typeLength);
 
-        this->connection->send(bytesToSend, sizeof(bytesToSend));
+        this->connection->send(bytesToSend, 2 + typeLength);
+        delete[] bytesToSend;
     }
 
     template <typename T>
-    inline void send (const std::string& type, T message)
+    inline void send(const std::string& type, T message)
     {
         const char* typeBytes = type.c_str();
+        size_t typeLength = strlen(typeBytes);
 
         std::stringstream ss;
         msgpack::pack(ss, message);
-
         std::string encoded = ss.str();
+        size_t encodedLength = encoded.length();
 
-        unsigned char bytesToSend[2 + strlen(typeBytes) + encoded.length()];
-        bytesToSend[0] = (int) Protocol::ROOM_DATA;
-        bytesToSend[1] = type.size() | 0xa0;
-        memcpy(bytesToSend + 2, typeBytes, sizeof(typeBytes));
-        memcpy(bytesToSend + 2 + strlen(typeBytes), encoded.c_str(), encoded.length());
+        unsigned char* bytesToSend = new unsigned char[2 + typeLength + encodedLength];
+        bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
+        bytesToSend[1] = typeLength | 0xa0;
+        memcpy(bytesToSend + 2, typeBytes, typeLength);
+        memcpy(bytesToSend + 2 + typeLength, encoded.c_str(), encodedLength);
 
-        this->connection->send(bytesToSend, sizeof(bytesToSend));
+        this->connection->send(bytesToSend, 2 + typeLength + encodedLength);
+        delete[] bytesToSend;
     }
 
     inline Room<S>* onMessage(int type, std::function<void(const msgpack::object &)> callback)
@@ -336,4 +340,3 @@ protected:
 
     Serializer<S>* serializer;
 };
-#endif /* Room_hpp */

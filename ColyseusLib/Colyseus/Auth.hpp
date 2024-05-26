@@ -9,7 +9,7 @@
 
 using namespace cocos2d::network;
 
-class Auth : public cocos2d::Ref
+class Auth : public ax::Object
 {
 public:
     Auth(std::string endpoint);

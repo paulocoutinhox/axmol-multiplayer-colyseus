@@ -5,8 +5,8 @@
 #include "Protocol.hpp"
 #include "Connection.hpp"
 
-using namespace cocos2d;
-using namespace cocos2d::network;
+using namespace ax;
+using namespace ax::network;
 
 Connection::Connection(const std::string& _endpoint)
 {
@@ -15,16 +15,18 @@ Connection::Connection(const std::string& _endpoint)
 
 Connection::~Connection()
 {
-    CC_SAFE_DELETE(_ws);
+    AX_SAFE_DELETE(_ws);
 }
 
 void Connection::open()
 {
     _ws = new WebSocket();
+
     if(!_ws->open(this, endpoint))
     {
-        // TODO: call _onError too
-        // this->_onError(this, new WebSocket::ErrorCode);
+        if (_onError) {
+            _onError(0, "Failed to initialize WebSocket");
+        }
 
         this->onClose(_ws);
     }
@@ -32,40 +34,40 @@ void Connection::open()
 
 WebSocket::State Connection::getReadyState()
 {
-    return this->_ws->getReadyState();
+    return _ws->getReadyState();
 }
 
 void Connection::close()
 {
-    this->_ws->closeAsync();
+    _ws->closeAsync();
 }
 
 void Connection::onOpen(WebSocket* ws)
 {
-    if (this->_onOpen) {
-        this->_onOpen();
+    if (_onOpen) {
+        _onOpen();
     }
 }
 
 void Connection::onMessage(WebSocket* ws, const WebSocket::Data& data)
 {
-    if (this->_onMessage) {
-        this->_onMessage(data);
+    if (_onMessage) {
+        _onMessage(data);
     }
 }
 
 void Connection::onClose(WebSocket* ws)
 {
-    CC_SAFE_DELETE(ws);
+    AX_SAFE_DELETE(ws);
 
-    if (this->_onClose) {
-        this->_onClose();
+    if (_onClose) {
+        _onClose();
     }
 }
 
 void Connection::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
 {
-    if (this->_onError) {
+    if (_onError) {
         std::string message = "";
 
         switch (error)
@@ -81,7 +83,6 @@ void Connection::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
             break;
         }
 
-        // TODO
-        this->_onError(0, message);
+        _onError(0, message);
     }
 }

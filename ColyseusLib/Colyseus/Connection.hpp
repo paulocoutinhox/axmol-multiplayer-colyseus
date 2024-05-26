@@ -1,16 +1,15 @@
-#ifndef Connection_hpp
-#define Connection_hpp
+#pragma once
 
 #include <stdio.h>
 #include <functional>
 #include "msgpack.hpp"
 
-#include "cocos2d.h"
+#include "axmol.h"
 #include "network/WebSocket.h"
 
-using namespace cocos2d::network;
+using namespace ax::network;
 
-typedef std::function<void(cocos2d::Ref*,cocos2d::Ref*)> RoomEventHandle;
+typedef std::function<void(ax::Object*, ax::Object*)> RoomEventHandle;
 
 class Connection : public WebSocket::Delegate
 {
@@ -46,4 +45,3 @@ public:
     }
 
 };
-#endif /* Connection_hpp */
