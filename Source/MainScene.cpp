@@ -37,6 +37,7 @@ bool MainScene::init() {
 
         // initialize player sprite
         playerSprite = Sprite::create("player.png");
+        playerSprite->setContentSize(Vec2(100, 100));
         playerSprite->setPosition(Vec2(240, 160));
         this->addChild(playerSprite);
 
@@ -45,6 +46,11 @@ bool MainScene::init() {
         eventListener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
         eventListener->onKeyReleased = CC_CALLBACK_2(MainScene::onKeyReleased, this);
         this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, playerSprite);
+
+        // add touch event listener
+        auto touchListener = EventListenerTouchOneByOne::create();
+        touchListener->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
+        this->_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
         scheduleUpdate();
     });
@@ -134,14 +140,21 @@ void MainScene::update(float delta) {
     case GameState::update: {
         Vec2 pos = playerSprite->getPosition();
 
-        if (moveUp)
+        if (moveUp) {
             pos.y += 100 * delta;
-        if (moveDown)
+        }
+
+        if (moveDown) {
             pos.y -= 100 * delta;
-        if (moveLeft)
+        }
+
+        if (moveLeft) {
             pos.x -= 100 * delta;
-        if (moveRight)
+        }
+
+        if (moveRight) {
             pos.x += 100 * delta;
+        }
 
         playerSprite->setPosition(pos);
 
@@ -153,5 +166,16 @@ void MainScene::update(float delta) {
 
         break;
     }
+    }
+}
+
+void MainScene::onTouchEnded(Touch *touch, Event *event) {
+    Vec2 touchLocation = touch->getLocation();
+    playerSprite->setPosition(touchLocation);
+
+    // send movement data to server
+    if (room) {
+        std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
+        room->send("move", movementData);
     }
 }
