@@ -190,6 +190,9 @@ endif()
 
 target_include_directories(${APP_NAME} PRIVATE ${GAME_INC_DIRS})
 
+# colyseus
+target_compile_definitions(${APP_NAME} PUBLIC MSGPACK_NO_BOOST)
+
 # mark app resources, resource will be copy auto after mark
 ax_setup_app_config(${APP_NAME})
 
