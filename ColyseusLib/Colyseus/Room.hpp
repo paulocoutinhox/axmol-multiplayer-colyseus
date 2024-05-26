@@ -253,6 +253,39 @@ protected:
 
             break;
         }
+        case Protocol::ROOM_DATA_BYTES: {
+#ifdef COLYSEUS_DEBUG
+            std::cout << "Colyseus.Room: ROOM_DATA_BYTES" << std::endl;
+#endif
+            it->offset = 1;
+
+            std::string type;
+
+            if (colyseus::schema::numberCheck(bytes, it)) {
+                type = getMessageHandlerKey(colyseus::schema::decodeNumber(bytes, it));
+            } else {
+                type = getMessageHandlerKey(colyseus::schema::decodeString(bytes, it));
+            }
+
+            std::map<const std::string, std::function<void(const msgpack::object &)>>::iterator found;
+            found = onMessageHandlers.find(type);
+
+            if (found != onMessageHandlers.end()) {
+                if (len > it->offset) {
+                    const char *thebytes = data.bytes;
+                    msgpack::object_handle oh = msgpack::unpack(thebytes, len, it->offset);
+                    msgpack::object data = oh.get();
+                    found->second(data);
+                } else {
+                    msgpack::object empty;
+                    found->second(empty);
+                }
+            } else {
+                std::cout << "Room::onMessage() missing for type => " << type << std::endl;
+            }
+
+            break;
+        }
         default: {
             break;
         }
