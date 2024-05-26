@@ -32,6 +32,7 @@ private:
 
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
     void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
+    bool onTouchBegan(ax::Touch *touch, ax::Event *event);
     void onTouchEnded(ax::Touch *touch, ax::Event *event);
 
     void onStateChange(RoomStateSchema *state);

@@ -14,15 +14,31 @@ bool MainScene::init() {
     auto safeArea = _director->getSafeAreaRect();
     auto safeOrigin = safeArea.origin;
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+    auto label = Label::createWithTTF("Multiplayer Game", "fonts/Marker Felt.ttf", 24);
     label->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - label->getContentSize().height));
     addChild(label);
 
+    // add keyboard event listener
+    auto eventListener = EventListenerKeyboard::create();
+    eventListener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
+    eventListener->onKeyReleased = CC_CALLBACK_2(MainScene::onKeyReleased, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this);
+
+    // add touch event listener
+    auto touchListener = EventListenerTouchOneByOne::create();
+    touchListener->onTouchBegan = CC_CALLBACK_2(MainScene::onTouchBegan, this);
+    touchListener->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+    // schedule update to always run
+    scheduleUpdate();
+
+    // connect to the server
     client = new Client("ws://192.168.0.113:3000");
 
     client->joinOrCreate<RoomStateSchema>("my_room", {}, [this](MatchMakeError *error, Room<RoomStateSchema> *room) {
         if (error) {
-            // Handle error
+            // handle error
             return;
         }
 
@@ -31,28 +47,16 @@ bool MainScene::init() {
             this->onStateChange(state);
         };
 
-        //        this->room->onMessage = [this](const std::string &type, const msgpack::object &message) {
-        //            this->onMessage(type, message);
-        //        };
+        // uncomment if you need to handle specific messages from the server
+        // this->room->onMessage = [this](const std::string &type, const msgpack::object &message) {
+        //     this->onMessage(type, message);
+        // };
 
-        // initialize player sprite
+        // initialize player sprite once connected
         playerSprite = Sprite::create("player.png");
         playerSprite->setContentSize(Vec2(100, 100));
         playerSprite->setPosition(Vec2(240, 160));
         this->addChild(playerSprite);
-
-        // add keyboard event listener
-        auto eventListener = EventListenerKeyboard::create();
-        eventListener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
-        eventListener->onKeyReleased = CC_CALLBACK_2(MainScene::onKeyReleased, this);
-        this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, playerSprite);
-
-        // add touch event listener
-        auto touchListener = EventListenerTouchOneByOne::create();
-        touchListener->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
-        this->_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
-        scheduleUpdate();
     });
 
     return true;
@@ -131,51 +135,57 @@ void MainScene::onMessage(const std::string &type, const msgpack::object &messag
 
 void MainScene::update(float delta) {
     switch (_gameState) {
-
     case GameState::init: {
         _gameState = GameState::update;
         break;
     }
 
     case GameState::update: {
-        Vec2 pos = playerSprite->getPosition();
+        if (playerSprite) {
+            Vec2 pos = playerSprite->getPosition();
 
-        if (moveUp) {
-            pos.y += 100 * delta;
+            if (moveUp) {
+                pos.y += 100 * delta;
+            }
+
+            if (moveDown) {
+                pos.y -= 100 * delta;
+            }
+
+            if (moveLeft) {
+                pos.x -= 100 * delta;
+            }
+
+            if (moveRight) {
+                pos.x += 100 * delta;
+            }
+
+            playerSprite->setPosition(pos);
+
+            // send movement data to server if room is connected
+            if (room) {
+                std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
+                room->send("move", movementData);
+            }
         }
-
-        if (moveDown) {
-            pos.y -= 100 * delta;
-        }
-
-        if (moveLeft) {
-            pos.x -= 100 * delta;
-        }
-
-        if (moveRight) {
-            pos.x += 100 * delta;
-        }
-
-        playerSprite->setPosition(pos);
-
-        // send movement data to server
-        if (room) {
-            std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
-            room->send("move", movementData);
-        }
-
-        break;
     }
     }
 }
 
-void MainScene::onTouchEnded(Touch *touch, Event *event) {
-    Vec2 touchLocation = touch->getLocation();
-    playerSprite->setPosition(touchLocation);
+bool MainScene::onTouchBegan(Touch *touch, Event *event) {
+    // Returning true to indicate that we have handled the touch event
+    return true;
+}
 
-    // send movement data to server
-    if (room) {
-        std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
-        room->send("move", movementData);
+void MainScene::onTouchEnded(Touch *touch, Event *event) {
+    if (playerSprite) {
+        Vec2 touchLocation = touch->getLocation();
+        playerSprite->setPosition(touchLocation);
+
+        // send movement data to server if room is connected
+        if (room) {
+            std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
+            room->send("move", movementData);
+        }
     }
 }
