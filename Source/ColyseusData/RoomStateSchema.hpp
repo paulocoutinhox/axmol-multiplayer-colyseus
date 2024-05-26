@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Colyseus/Serializer/schema.h"
 #include "PlayerSchema.hpp"
-#include "schema.h"
 #include <typeindex>
 #include <typeinfo>
 

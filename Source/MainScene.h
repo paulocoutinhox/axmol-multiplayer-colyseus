@@ -4,7 +4,8 @@
 
 #include "Colyseus/Client.hpp"
 #include "Colyseus/Room.hpp"
-#include "ColyseusData/RoomState.hpp"
+#include "ColyseusData/RoomStateSchema.hpp"
+#include "ColyseusData/PlayerSchema.hpp"
 
 class MainScene : public ax::Scene {
     enum class GameState {
@@ -20,7 +21,7 @@ private:
     GameState _gameState = GameState::init;
 
     Client *client;
-    Room<RoomState> *room;
+    Room<RoomStateSchema> *room;
     ax::Sprite *playerSprite;
     std::map<std::string, ax::Sprite *> playerSprites;
 

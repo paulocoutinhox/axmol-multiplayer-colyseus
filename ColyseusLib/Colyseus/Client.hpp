@@ -118,7 +118,7 @@ protected:
             }
 
             if (response && response->getResponseCode() == 200) {
-                std::vector<char> *data = response->getResponseData();
+                yasio::sbyte_buffer *data = response->getResponseData();
                 std::string json_string(data->begin(), data->end());
                 auto json = nlohmann::json::parse(json_string);
 

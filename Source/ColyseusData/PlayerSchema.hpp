@@ -1,6 +1,6 @@
 #pragma once
 
-#include "schema.h"
+#include "Colyseus/Serializer/schema.h"
 
 using namespace colyseus::schema;
 

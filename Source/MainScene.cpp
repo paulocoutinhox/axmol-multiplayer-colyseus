@@ -19,7 +19,7 @@ bool MainScene::init() {
     this->addChild(label);
 
     client = new Client("ws://localhost:3000");
-    client->joinOrCreate<RoomState>("my_room", nullptr, [&](Room *room) {
+    client->joinOrCreate<RoomStateSchema>("my_room", nullptr, [&](Room *room) {
         this->room = room;
         this->room->onStateChange = CC_CALLBACK_1(GameScene::onStateChange, this);
         this->room->onMessage = CC_CALLBACK_2(GameScene::onMessage, this);
