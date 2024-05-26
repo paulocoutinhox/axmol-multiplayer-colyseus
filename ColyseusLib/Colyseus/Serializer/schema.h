@@ -4,8 +4,7 @@
  *
  * This file is part of Colyseus: https://github.com/colyseus/colyseus
  */
-#ifndef __COLYSEUS_SCHEMA_H__
-#define __COLYSEUS_SCHEMA_H__ 1
+#pragma once
 
 #include <iostream>
 #include <stdint.h>
@@ -51,25 +50,25 @@ struct DataChange
     // T previousValue;
 };
 
-inline bool IsLittleEndian();
+// inline bool IsLittleEndian();
 
-inline string decodeString(unsigned const char bytes[], Iterator *it);
-inline int8_t decodeInt8(unsigned const char bytes[], Iterator *it);
-inline uint8_t decodeUint8(unsigned const char bytes[], Iterator *it);
-inline int16_t decodeInt16(unsigned const char bytes[], Iterator *it);
-inline uint16_t decodeUint16(unsigned const char bytes[], Iterator *it);
-inline int32_t decodeInt32(unsigned const char bytes[], Iterator *it);
-inline uint32_t decodeUint32(unsigned const char bytes[], Iterator *it);
-inline int64_t decodeInt64(unsigned const char bytes[], Iterator *it);
-inline uint64_t decodeUint64(unsigned const char bytes[], Iterator *it);
-inline float32_t decodeFloat32(unsigned const char bytes[], Iterator *it);
-inline float64_t decodeFloat64(unsigned const char bytes[], Iterator *it);
-inline varint_t decodeNumber(unsigned const char bytes[], Iterator *it);
-inline bool decodeBoolean(unsigned const char bytes[], Iterator *it);
-inline bool numberCheck(unsigned const char bytes[], Iterator *it);
-inline bool arrayCheck (unsigned const char bytes[], Iterator *it);
-inline bool nilCheck(unsigned const char bytes[], Iterator *it);
-inline bool indexChangeCheck(unsigned const char bytes[], Iterator *it);
+ inline string decodeString(unsigned const char bytes[], Iterator *it);
+ inline int8_t decodeInt8(unsigned const char bytes[], Iterator *it);
+ inline uint8_t decodeUint8(unsigned const char bytes[], Iterator *it);
+ inline int16_t decodeInt16(unsigned const char bytes[], Iterator *it);
+ inline uint16_t decodeUint16(unsigned const char bytes[], Iterator *it);
+ inline int32_t decodeInt32(unsigned const char bytes[], Iterator *it);
+ inline uint32_t decodeUint32(unsigned const char bytes[], Iterator *it);
+ inline int64_t decodeInt64(unsigned const char bytes[], Iterator *it);
+ inline uint64_t decodeUint64(unsigned const char bytes[], Iterator *it);
+ inline float32_t decodeFloat32(unsigned const char bytes[], Iterator *it);
+ inline float64_t decodeFloat64(unsigned const char bytes[], Iterator *it);
+ inline varint_t decodeNumber(unsigned const char bytes[], Iterator *it);
+ inline bool decodeBoolean(unsigned const char bytes[], Iterator *it);
+ inline bool numberCheck(unsigned const char bytes[], Iterator *it);
+ inline bool arrayCheck (unsigned const char bytes[], Iterator *it);
+ inline bool nilCheck(unsigned const char bytes[], Iterator *it);
+ inline bool indexChangeCheck(unsigned const char bytes[], Iterator *it);
 
 inline bool IsLittleEndian()
 {
@@ -276,7 +275,6 @@ class ArraySchema
 {
   public:
     ArraySchema() {}
-    ~ArraySchema() {}
 
     std::vector<T> items;
 
@@ -322,7 +320,6 @@ class MapSchema
 {
   public:
     MapSchema() {}
-    ~MapSchema() {}
 
     tsl::ordered_map<string, T> items;
 
@@ -399,7 +396,6 @@ class Schema
     std::function<void()> onRemove;
 
     Schema() {}
-    ~Schema() {}
 
     template <typename T>
     inline void decodeArrayPrimitive(ArraySchema<T> &array, int index, unsigned const char bytes[], Iterator *it,
@@ -814,4 +810,3 @@ class Schema
 } // namespace schema
 } // namespace colyseus
 
-#endif // __COLYSEUS_SCHEMA_H__ 1
