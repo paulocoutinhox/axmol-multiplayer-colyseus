@@ -16,13 +16,24 @@ bool MainScene::init() {
 
     auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
     label->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - label->getContentSize().height));
-    this->addChild(label);
+    addChild(label);
 
-    client = new Client("ws://localhost:3000");
-    client->joinOrCreate<RoomStateSchema>("my_room", nullptr, [&](Room *room) {
+    client = new Client("ws://192.168.0.113:3000");
+
+    client->joinOrCreate<RoomStateSchema>("my_room", {}, [this](MatchMakeError *error, Room<RoomStateSchema> *room) {
+        if (error) {
+            // Handle error
+            return;
+        }
+
         this->room = room;
-        this->room->onStateChange = CC_CALLBACK_1(GameScene::onStateChange, this);
-        this->room->onMessage = CC_CALLBACK_2(GameScene::onMessage, this);
+        this->room->onStateChange = [this](RoomStateSchema *state) {
+            this->onStateChange(state);
+        };
+
+        //        this->room->onMessage = [this](const std::string &type, const msgpack::object &message) {
+        //            this->onMessage(type, message);
+        //        };
 
         // initialize player sprite
         playerSprite = Sprite::create("player.png");
@@ -31,14 +42,12 @@ bool MainScene::init() {
 
         // add keyboard event listener
         auto eventListener = EventListenerKeyboard::create();
-        eventListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
-        eventListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+        eventListener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
+        eventListener->onKeyReleased = CC_CALLBACK_2(MainScene::onKeyReleased, this);
         this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, playerSprite);
 
         scheduleUpdate();
     });
-
-    scheduleUpdate();
 
     return true;
 }
@@ -81,11 +90,11 @@ void MainScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event *event) {
     }
 }
 
-void MainScene::onStateChange(State *state) {
+void MainScene::onStateChange(RoomStateSchema *state) {
     // update players based on the state
-    for (auto &kv : state->players) {
+    for (auto &kv : state->players->items) {
         const std::string &playerId = kv.first;
-        auto &playerData = kv.second;
+        PlayerSchema *playerData = kv.second;
 
         if (playerSprites.find(playerId) == playerSprites.end()) {
             auto sprite = Sprite::create("player.png");
@@ -93,13 +102,13 @@ void MainScene::onStateChange(State *state) {
             playerSprites[playerId] = sprite;
         }
 
-        playerSprites[playerId]->setPosition(Vec2(playerData["x"].GetFloat(), playerData["y"].GetFloat()));
+        playerSprites[playerId]->setPosition(Vec2(playerData->x, playerData->y));
     }
 
     // remove disconnected players
     std::vector<std::string> toRemove;
     for (auto &kv : playerSprites) {
-        if (state->players.find(kv.first) == state->players.end()) {
+        if (!state->players->has(kv.first)) {
             this->removeChild(kv.second);
             toRemove.push_back(kv.first);
         }
@@ -110,7 +119,7 @@ void MainScene::onStateChange(State *state) {
     }
 }
 
-void MainScene::onMessage(const std::string &type, const std::map<std::string, float> &message) {
+void MainScene::onMessage(const std::string &type, const msgpack::object &message) {
     // handle other messages from server if needed
 }
 
@@ -138,7 +147,8 @@ void MainScene::update(float delta) {
 
         // send movement data to server
         if (room) {
-            room->send("move", {{"x", pos.x}, {"y", pos.y}});
+            std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
+            room->send("move", movementData);
         }
 
         break;

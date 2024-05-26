@@ -4,8 +4,8 @@
 
 #include "Colyseus/Client.hpp"
 #include "Colyseus/Room.hpp"
-#include "ColyseusData/RoomStateSchema.hpp"
 #include "ColyseusData/PlayerSchema.hpp"
+#include "ColyseusData/RoomStateSchema.hpp"
 
 class MainScene : public ax::Scene {
     enum class GameState {
@@ -32,4 +32,7 @@ private:
 
     void onKeyPressed(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
     void onKeyReleased(ax::EventKeyboard::KeyCode keyCode, ax::Event *event);
+
+    void onStateChange(RoomStateSchema *state);
+    void onMessage(const std::string &type, const msgpack::object &message);
 };
