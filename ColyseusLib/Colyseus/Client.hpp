@@ -1,31 +1,30 @@
 #pragma once
 
-#include <string>
-#include <functional>
-#include <vector>
-#include "thirdparty/nlohmann/json.hpp"
-#include "network/WebSocket.h"
-#include "network/HttpClient.h"
-#include "Room.hpp"
 #include "Connection.hpp"
+#include "Room.hpp"
+#include "network/HttpClient.h"
+#include "network/WebSocket.h"
+#include "thirdparty/nlohmann/json.hpp"
+#include <functional>
+#include <string>
+#include <vector>
 
 using namespace ax::network;
 using namespace nlohmann;
 
 typedef json JoinOptions;
 
-class MatchMakeError
-{
+class MatchMakeError {
 public:
     MatchMakeError(int _code, std::string _message)
-        : code(_code), message(std::move(_message)) {}
+        : code(_code)
+        , message(std::move(_message)) {}
 
     int code;
     std::string message;
 };
 
-class Client : public ax::Object
-{
+class Client : public ax::Object {
 public:
     std::string endpoint;
 
@@ -33,39 +32,33 @@ public:
         : endpoint(std::move(endpoint)) {}
 
     template <typename S>
-    void joinOrCreate(const std::string& roomName, const JoinOptions& options, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void joinOrCreate(const std::string &roomName, const JoinOptions &options, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         createMatchMakeRequest<S>("joinOrCreate", roomName, options, callback);
     }
 
     template <typename S>
-    void join(const std::string& roomName, const JoinOptions& options, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void join(const std::string &roomName, const JoinOptions &options, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         createMatchMakeRequest<S>("join", roomName, options, callback);
     }
 
     template <typename S>
-    void create(const std::string& roomName, const JoinOptions& options, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void create(const std::string &roomName, const JoinOptions &options, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         createMatchMakeRequest<S>("create", roomName, options, callback);
     }
 
     template <typename S>
-    void joinById(const std::string& roomId, const JoinOptions& options, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void joinById(const std::string &roomId, const JoinOptions &options, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         createMatchMakeRequest<S>("joinById", roomId, options, callback);
     }
 
     template <typename S>
-    void reconnect(const std::string& roomId, const std::string& sessionId, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void reconnect(const std::string &roomId, const std::string &sessionId, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         createMatchMakeRequest<S>("joinById", roomId, {{"sessionId", sessionId}}, callback);
     }
 
 private:
     template <typename S>
-    void createMatchMakeRequest(const std::string& method, const std::string& roomName, const JoinOptions& options, std::function<void(MatchMakeError*, Room<S>*)> callback)
-    {
+    void createMatchMakeRequest(const std::string &method, const std::string &roomName, const JoinOptions &options, std::function<void(MatchMakeError *, Room<S> *)> callback) {
         auto req = new (std::nothrow) HttpRequest();
 
         // replace "ws" with "http" if it appears at the start of the endpoint
@@ -86,22 +79,22 @@ private:
         }
         req->setRequestData(data.c_str(), data.length());
 
-        req->setResponseCallback([this, roomName, callback](HttpClient* client, HttpResponse* response) {
+        req->setResponseCallback([this, roomName, callback](HttpClient *client, HttpResponse *response) {
             if (!response || !response->isSucceed()) {
-                MatchMakeError* error = new MatchMakeError(response ? static_cast<int>(response->getResponseCode()) : 0, "server error");
+                MatchMakeError *error = new MatchMakeError(response ? static_cast<int>(response->getResponseCode()) : 0, "server error");
                 callback(error, nullptr);
                 delete error;
                 return;
             }
 
             // handle response data using yasio::sbyte_buffer
-            yasio::sbyte_buffer* responseData = response->getResponseData();
+            yasio::sbyte_buffer *responseData = response->getResponseData();
             std::string json_string(responseData->data(), responseData->data() + responseData->size());
             auto json = nlohmann::json::parse(json_string);
 
             // server responded with error
             if (json.contains("error") && json["error"].is_string()) {
-                MatchMakeError* error = new MatchMakeError(json["code"].get<int>(), json["error"].get<std::string>());
+                MatchMakeError *error = new MatchMakeError(json["code"].get<int>(), json["error"].get<std::string>());
                 callback(error, nullptr);
                 delete error;
                 return;
@@ -113,8 +106,8 @@ private:
 
             std::string processId = json["room"]["processId"].get<std::string>();
 
-            room->onError = [callback](const int& code, const std::string& message) {
-                MatchMakeError* error = new MatchMakeError(code, message);
+            room->onError = [callback](const int &code, const std::string &message) {
+                MatchMakeError *error = new MatchMakeError(code, message);
                 callback(error, nullptr);
                 delete error;
             };
@@ -131,8 +124,7 @@ private:
         req->release();
     }
 
-    Connection* createConnection(const std::string& path, const JoinOptions& options = JoinOptions())
-    {
+    Connection *createConnection(const std::string &path, const JoinOptions &options = JoinOptions()) {
         return new Connection(this->endpoint + "/" + path);
     }
 };

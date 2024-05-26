@@ -1,29 +1,25 @@
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
-#include "msgpack.hpp"
-#include "Protocol.hpp"
 #include "Connection.hpp"
+#include "Protocol.hpp"
+#include "msgpack.hpp"
 
 using namespace ax;
 using namespace ax::network;
 
-Connection::Connection(const std::string& _endpoint)
-{
+Connection::Connection(const std::string &_endpoint) {
     endpoint = _endpoint;
 }
 
-Connection::~Connection()
-{
+Connection::~Connection() {
     AX_SAFE_DELETE(_ws);
 }
 
-void Connection::open()
-{
+void Connection::open() {
     _ws = new WebSocket();
 
-    if(!_ws->open(this, endpoint))
-    {
+    if (!_ws->open(this, endpoint)) {
         if (_onError) {
             _onError(0, "Failed to initialize WebSocket");
         }
@@ -32,32 +28,27 @@ void Connection::open()
     }
 }
 
-WebSocket::State Connection::getReadyState()
-{
+WebSocket::State Connection::getReadyState() {
     return _ws->getReadyState();
 }
 
-void Connection::close()
-{
+void Connection::close() {
     _ws->closeAsync();
 }
 
-void Connection::onOpen(WebSocket* ws)
-{
+void Connection::onOpen(WebSocket *ws) {
     if (_onOpen) {
         _onOpen();
     }
 }
 
-void Connection::onMessage(WebSocket* ws, const WebSocket::Data& data)
-{
+void Connection::onMessage(WebSocket *ws, const WebSocket::Data &data) {
     if (_onMessage) {
         _onMessage(data);
     }
 }
 
-void Connection::onClose(WebSocket* ws)
-{
+void Connection::onClose(WebSocket *ws) {
     AX_SAFE_DELETE(ws);
 
     if (_onClose) {
@@ -65,13 +56,11 @@ void Connection::onClose(WebSocket* ws)
     }
 }
 
-void Connection::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
-{
+void Connection::onError(WebSocket *ws, const WebSocket::ErrorCode &error) {
     if (_onError) {
         std::string message = "";
 
-        switch (error)
-        {
+        switch (error) {
         case WebSocket::ErrorCode::CONNECTION_FAILURE:
             message = "CONNECTION_FAILURE";
             break;

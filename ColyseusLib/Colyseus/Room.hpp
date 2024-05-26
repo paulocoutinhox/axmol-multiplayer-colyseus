@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdio.h>
-#include "Protocol.hpp"
 #include "Connection.hpp"
+#include "Protocol.hpp"
+#include <stdio.h>
 
-#include "Serializer/schema.h"
-#include "Serializer/Serializer.hpp"
 #include "Serializer/SchemaSerializer.hpp"
+#include "Serializer/Serializer.hpp"
+#include "Serializer/schema.h"
 
 /*
 class IRoom {
@@ -24,16 +24,14 @@ class Room
 // : IRoom
 {
 public:
-    Room(const std::string _name)
-    {
+    Room(const std::string _name) {
         name = _name;
         serializer = new SchemaSerializer<S>();
     }
     ~Room() {}
 
     // Methods
-    void connect(Connection *connection)
-    {
+    void connect(Connection *connection) {
         this->connection = connection;
         this->connection->_onClose = std::bind(&Room::_onClose, this);
         this->connection->_onError = std::bind(&Room::_onError, this, std::placeholders::_1, std::placeholders::_2);
@@ -41,44 +39,34 @@ public:
         this->connection->open();
     }
 
-    void leave(bool consented = true)
-    {
-        if (!this->id.empty())
-        {
-            if (consented)
-            {
-                unsigned char bytes[1] = { (int)Protocol::LEAVE_ROOM };
+    void leave(bool consented = true) {
+        if (!this->id.empty()) {
+            if (consented) {
+                unsigned char bytes[1] = {(int)Protocol::LEAVE_ROOM};
                 this->connection->send(bytes, sizeof(bytes));
-            }
-            else
-            {
+            } else {
                 this->connection->close();
             }
-        }
-        else
-        {
-            if (onLeave)
-            {
+        } else {
+            if (onLeave) {
                 this->onLeave();
             }
         }
     }
 
-    inline void send (unsigned char type)
-    {
+    inline void send(unsigned char type) {
         unsigned char message[2] = {(int)Protocol::ROOM_DATA, type};
         this->connection->send(message, sizeof(message));
     }
 
     template <typename T>
-    inline void send(const int32_t& type, T message)
-    {
+    inline void send(const int32_t &type, T message) {
         std::stringstream ss;
         msgpack::pack(ss, message);
         std::string encoded = ss.str();
         size_t encodedLength = encoded.length();
 
-        unsigned char* bytesToSend = new unsigned char[encodedLength + 2];
+        unsigned char *bytesToSend = new unsigned char[encodedLength + 2];
         bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
         bytesToSend[1] = type;
         memcpy(bytesToSend + 2, encoded.c_str(), encodedLength);
@@ -87,12 +75,11 @@ public:
         delete[] bytesToSend;
     }
 
-    inline void send(const std::string& type)
-    {
-        const char* typeBytes = type.c_str();
+    inline void send(const std::string &type) {
+        const char *typeBytes = type.c_str();
         size_t typeLength = strlen(typeBytes);
 
-        unsigned char* bytesToSend = new unsigned char[2 + typeLength];
+        unsigned char *bytesToSend = new unsigned char[2 + typeLength];
         bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
         bytesToSend[1] = typeLength | 0xa0;
         memcpy(bytesToSend + 2, typeBytes, typeLength);
@@ -102,9 +89,8 @@ public:
     }
 
     template <typename T>
-    inline void send(const std::string& type, T message)
-    {
-        const char* typeBytes = type.c_str();
+    inline void send(const std::string &type, T message) {
+        const char *typeBytes = type.c_str();
         size_t typeLength = strlen(typeBytes);
 
         std::stringstream ss;
@@ -112,7 +98,7 @@ public:
         std::string encoded = ss.str();
         size_t encodedLength = encoded.length();
 
-        unsigned char* bytesToSend = new unsigned char[2 + typeLength + encodedLength];
+        unsigned char *bytesToSend = new unsigned char[2 + typeLength + encodedLength];
         bytesToSend[0] = (unsigned char)Protocol::ROOM_DATA;
         bytesToSend[1] = typeLength | 0xa0;
         memcpy(bytesToSend + 2, typeBytes, typeLength);
@@ -122,34 +108,31 @@ public:
         delete[] bytesToSend;
     }
 
-    inline Room<S>* onMessage(int type, std::function<void(const msgpack::object &)> callback)
-    {
+    inline Room<S> *onMessage(int type, std::function<void(const msgpack::object &)> callback) {
         onMessageHandlers[getMessageHandlerKey(type)] = callback;
         return this;
     }
 
-    inline Room<S>* onMessage(const std::string& type, std::function<void(const msgpack::object &)> callback)
-    {
+    inline Room<S> *onMessage(const std::string &type, std::function<void(const msgpack::object &)> callback) {
         onMessageHandlers[getMessageHandlerKey(type)] = callback;
         return this;
     }
 
-    S *getState()
-    {
+    S *getState() {
         return this->serializer->getState();
     }
 
     // Callbacks
     std::function<void()> onJoin;
     std::function<void()> onLeave;
-    std::function<void(const int&, const std::string &)> onError;
-    std::function<void(S*)> onStateChange;
+    std::function<void(const int &, const std::string &)> onError;
+    std::function<void(S *)> onStateChange;
     // std::function<void(const msgpack::object &)> onMessage;
 
     std::map<const std::string, std::function<void(const msgpack::object &)>> onMessageHandlers;
 
     // Properties
-    Connection* connection;
+    Connection *connection;
 
     std::string id;
     std::string name;
@@ -157,24 +140,19 @@ public:
     std::string serializerId;
 
 protected:
-    void _onClose()
-    {
-        if (this->onLeave)
-        {
+    void _onClose() {
+        if (this->onLeave) {
             this->onLeave();
         }
     }
 
-    void _onError(const int &code, const std::string& message)
-    {
-        if (this->onError)
-        {
+    void _onError(const int &code, const std::string &message) {
+        if (this->onError) {
             this->onError(code, message);
         }
     }
 
-    void _onMessage(const WebSocket::Data &data)
-    {
+    void _onMessage(const WebSocket::Data &data) {
         size_t len = data.len;
         unsigned const char *bytes = reinterpret_cast<const unsigned char *>(data.bytes);
         // const char *bytes = data.bytes;
@@ -188,148 +166,122 @@ protected:
 
         unsigned char code = bytes[it->offset++];
 
-        switch ((Protocol)code)
-        {
-            case Protocol::JOIN_ROOM:
-            {
+        switch ((Protocol)code) {
+        case Protocol::JOIN_ROOM: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: join error" << std::endl;
+            std::cout << "Colyseus.Room: join error" << std::endl;
 #endif
 
-                serializerId = colyseus::schema::decodeString(bytes, it);
+            serializerId = colyseus::schema::decodeString(bytes, it);
 
-                // TODO: instantiate serializer by id
-                if (len > it->offset)
-                {
-                    serializer->handshake(bytes, it->offset);
-                }
-
-                if (this->onJoin)
-                {
-                    this->onJoin();
-                }
-
-                unsigned char message[1] = { (int)Protocol::JOIN_ROOM };
-                this->connection->send(message, sizeof(message));
-                break;
+            // TODO: instantiate serializer by id
+            if (len > it->offset) {
+                serializer->handshake(bytes, it->offset);
             }
-            case Protocol::JOIN_ERROR:
-            {
+
+            if (this->onJoin) {
+                this->onJoin();
+            }
+
+            unsigned char message[1] = {(int)Protocol::JOIN_ROOM};
+            this->connection->send(message, sizeof(message));
+            break;
+        }
+        case Protocol::JOIN_ERROR: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: join error" << std::endl;
+            std::cout << "Colyseus.Room: join error" << std::endl;
 #endif
-                std::string message = colyseus::schema::decodeString(bytes, it);
+            std::string message = colyseus::schema::decodeString(bytes, it);
 
-                if (this->onError)
-                {
-                    // TODO:
-                    this->onError(0, message);
-                }
-                break;
+            if (this->onError) {
+                // TODO:
+                this->onError(0, message);
             }
-            case Protocol::LEAVE_ROOM:
-            {
+            break;
+        }
+        case Protocol::LEAVE_ROOM: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: LEAVE_ROOM" << std::endl;
+            std::cout << "Colyseus.Room: LEAVE_ROOM" << std::endl;
 #endif
-                this->leave();
+            this->leave();
 
-                break;
-            }
-            case Protocol::ROOM_DATA:
-            {
+            break;
+        }
+        case Protocol::ROOM_DATA: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: ROOM_DATA" << std::endl;
+            std::cout << "Colyseus.Room: ROOM_DATA" << std::endl;
 #endif
-                std::string type;
+            std::string type;
 
-                if (colyseus::schema::numberCheck(bytes, it))
-                {
-                    type = getMessageHandlerKey(colyseus::schema::decodeNumber(bytes, it));
-                }
-                else
-                {
-                    type = getMessageHandlerKey(colyseus::schema::decodeString(bytes, it));
-                }
-
-                std::map<const std::string, std::function<void(const msgpack::object &)>>::iterator found;
-                found = onMessageHandlers.find(type);
-
-                if (found != onMessageHandlers.end())
-                {
-                    if (len > it->offset)
-                    {
-                        const char *thebytes = data.bytes;
-                        msgpack::object_handle oh = msgpack::unpack(thebytes, len, it->offset);
-                        msgpack::object data = oh.get();
-                        found->second(data);
-                    }
-                    else
-                    {
-                        msgpack::object empty;
-                        found->second(empty);
-                    }
-                }
-                else
-                {
-                    std::cout << "Room::onMessage() missing for type => " << type << std::endl;
-                }
-
-                break;
+            if (colyseus::schema::numberCheck(bytes, it)) {
+                type = getMessageHandlerKey(colyseus::schema::decodeNumber(bytes, it));
+            } else {
+                type = getMessageHandlerKey(colyseus::schema::decodeString(bytes, it));
             }
-            case Protocol::ROOM_STATE:
-            {
+
+            std::map<const std::string, std::function<void(const msgpack::object &)>>::iterator found;
+            found = onMessageHandlers.find(type);
+
+            if (found != onMessageHandlers.end()) {
+                if (len > it->offset) {
+                    const char *thebytes = data.bytes;
+                    msgpack::object_handle oh = msgpack::unpack(thebytes, len, it->offset);
+                    msgpack::object data = oh.get();
+                    found->second(data);
+                } else {
+                    msgpack::object empty;
+                    found->second(empty);
+                }
+            } else {
+                std::cout << "Room::onMessage() missing for type => " << type << std::endl;
+            }
+
+            break;
+        }
+        case Protocol::ROOM_STATE: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: ROOM_STATE" << std::endl;
+            std::cout << "Colyseus.Room: ROOM_STATE" << std::endl;
 #endif
-                this->setState(bytes, it->offset, len);
-                break;
-            }
-            case Protocol::ROOM_STATE_PATCH:
-            {
+            this->setState(bytes, it->offset, len);
+            break;
+        }
+        case Protocol::ROOM_STATE_PATCH: {
 #ifdef COLYSEUS_DEBUG
-                std::cout << "Colyseus.Room: ROOM_STATE_PATCH" << std::endl;
+            std::cout << "Colyseus.Room: ROOM_STATE_PATCH" << std::endl;
 #endif
-                this->applyPatch(bytes, it->offset, len);
+            this->applyPatch(bytes, it->offset, len);
 
-                break;
-            }
-            default:
-            {
-                break;
-            }
+            break;
+        }
+        default: {
+            break;
+        }
         }
 
         delete it;
     }
 
-    void setState(unsigned const char *bytes, int offset, int length)
-    {
+    void setState(unsigned const char *bytes, int offset, int length) {
         this->serializer->setState(bytes, offset, length);
 
-        if (onStateChange)
-        {
+        if (onStateChange) {
             this->onStateChange(this->getState());
         }
     }
 
-    void applyPatch(unsigned const char *bytes, int offset, int length)
-    {
+    void applyPatch(unsigned const char *bytes, int offset, int length) {
         this->serializer->patch(bytes, offset, length);
 
-        if (onStateChange)
-        {
+        if (onStateChange) {
             this->onStateChange(this->getState());
         }
     }
 
-    std::string getMessageHandlerKey (int32_t type)
-    {
+    std::string getMessageHandlerKey(int32_t type) {
         return "i" + std::to_string(type);
     }
 
-    std::string getMessageHandlerKey (std::string type)
-    {
+    std::string getMessageHandlerKey(std::string type) {
         return type;
     }
 
@@ -338,5 +290,5 @@ protected:
     //     return "s" + ?;
     // }
 
-    Serializer<S>* serializer;
+    Serializer<S> *serializer;
 };

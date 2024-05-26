@@ -1,13 +1,12 @@
 #ifndef Compare_h
 #define Compare_h
 
-#include <sstream>
-#include <iostream>
-#include <stdio.h>
 #include "msgpack.hpp"
+#include <iostream>
+#include <sstream>
+#include <stdio.h>
 
-class PatchObject
-{
+class PatchObject {
 public:
     PatchObject(std::vector<std::string> path, std::string op, msgpack::object value);
     std::vector<std::string> path;
@@ -16,8 +15,7 @@ public:
     msgpack::object previousValue;
 };
 
-class Compare
-{
+class Compare {
 public:
     static msgpack::object_handle *emptyState;
 
@@ -26,9 +24,7 @@ public:
     static void generate(
         const msgpack::object mirrorPacked,
         const msgpack::object objPacked, std::vector<PatchObject> *patches,
-        std::vector<std::string> path
-    );
+        std::vector<std::string> path);
 };
-
 
 #endif /* Compare_h */

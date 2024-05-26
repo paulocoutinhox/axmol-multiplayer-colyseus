@@ -1,6 +1,6 @@
-#include <iostream>
 #include <cctype>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -10,59 +10,49 @@
 using namespace ax;
 using namespace ax::network;
 
-Auth::Auth(std::string endpoint)
-{
+Auth::Auth(std::string endpoint) {
     this->endpoint = endpoint.replace(0, 2, "http");
     this->token = this->readToken();
 }
 
-Auth::~Auth()
-{
+Auth::~Auth() {
 }
 
-void Auth::login()
-{
+void Auth::login() {
     std::vector<std::string> query;
     return login(query);
 }
 
-void Auth::login(std::string email, std::string password)
-{
+void Auth::login(std::string email, std::string password) {
     std::vector<std::string> query;
     query.push_back("email=" + this->urlencode(email));
     query.push_back("password=" + this->urlencode(password));
     return login(query);
 }
 
-void Auth::login(std::string fbAccessToken)
-{
+void Auth::login(std::string fbAccessToken) {
     std::vector<std::string> query;
     query.push_back("accessToken=" + this->urlencode(fbAccessToken));
     return login(query);
 }
 
-void Auth::login(std::vector<std::string> query)
-{
+void Auth::login(std::vector<std::string> query) {
     request(HttpRequest::Type::POST, "/auth", query, "");
 }
 
-void Auth::save()
-{
+void Auth::save() {
     // TODO: save
     std::vector<std::string> query;
     // request("PUT", "/auth", query, )
 }
 
-void Auth::request(HttpRequest::Type method, std::string segments, std::vector<std::string> query)
-{
+void Auth::request(HttpRequest::Type method, std::string segments, std::vector<std::string> query) {
     request(method, segments, query, "");
 }
 
-void Auth::request(HttpRequest::Type method, std::string segments, std::vector<std::string> query, std::string upload)
-{
+void Auth::request(HttpRequest::Type method, std::string segments, std::vector<std::string> query, std::string upload) {
     std::string deviceId = this->getDeviceId();
-    if (deviceId != "")
-    {
+    if (deviceId != "") {
         query.push_back("deviceId=" + this->urlencode(this->getDeviceId()));
         query.push_back("platform=" + this->urlencode(this->getPlatform()));
     }
@@ -82,13 +72,11 @@ void Auth::request(HttpRequest::Type method, std::string segments, std::vector<s
     req->release();
 }
 
-void Auth::onHttpRequestCompleted(HttpClient * client, HttpResponse * response)
-{
+void Auth::onHttpRequestCompleted(HttpClient *client, HttpResponse *response) {
     // TODO: implementation needed
 }
 
-std::string Auth::getPlatform()
-{
+std::string Auth::getPlatform() {
 #if AX_TARGET_PLATFORM == AX_PLATFORM_MAC
     return "mac";
 #elif AX_TARGET_PLATFORM == AX_PLATFORM_IOS
@@ -102,8 +90,7 @@ std::string Auth::getPlatform()
 #endif
 }
 
-std::string Auth::getDeviceId()
-{
+std::string Auth::getDeviceId() {
     // TODO: get unique device id.
 
     // TODO: for Android
@@ -113,32 +100,25 @@ std::string Auth::getDeviceId()
     return "";
 }
 
-std::string Auth::readToken()
-{
+std::string Auth::readToken() {
     // TODO: read auth token from file
     return "";
 }
 
-void Auth::writeToken(std::string token)
-{
+void Auth::writeToken(std::string token) {
     // TODO: write auth token to file
     // https://github.com/cocos2d/cocos2d-x/issues/18549
 }
 
-std::string Auth::urlencode(const std::string &s)
-{
-    //RFC 3986 section 2.3 Unreserved Characters (January 2005)
+std::string Auth::urlencode(const std::string &s) {
+    // RFC 3986 section 2.3 Unreserved Characters (January 2005)
     const std::string unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~";
 
     std::string escaped = "";
-    for (size_t i = 0; i < s.length(); i++)
-    {
-        if (unreserved.find_first_of(s[i]) != std::string::npos)
-        {
+    for (size_t i = 0; i < s.length(); i++) {
+        if (unreserved.find_first_of(s[i]) != std::string::npos) {
             escaped.push_back(s[i]);
-        }
-        else
-        {
+        } else {
             escaped.append("%");
             char buf[3];
             sprintf(buf, "%.2X", s[i]);
@@ -148,14 +128,11 @@ std::string Auth::urlencode(const std::string &s)
     return escaped;
 }
 
-std::string Auth::string_join(const std::vector<std::string> &elements, const std::string &separator)
-{
-    if (!elements.empty())
-    {
+std::string Auth::string_join(const std::vector<std::string> &elements, const std::string &separator) {
+    if (!elements.empty()) {
         std::stringstream ss;
         auto it = elements.cbegin();
-        while (true)
-        {
+        while (true) {
             ss << *it++;
             if (it != elements.cend())
                 ss << separator;
@@ -165,4 +142,3 @@ std::string Auth::string_join(const std::vector<std::string> &elements, const st
     }
     return "";
 }
-

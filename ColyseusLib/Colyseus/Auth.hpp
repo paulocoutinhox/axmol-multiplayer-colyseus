@@ -8,8 +8,7 @@
 
 using namespace ax::network;
 
-class Auth : public ax::Object
-{
+class Auth : public ax::Object {
 public:
     Auth(std::string endpoint);
     virtual ~Auth();
@@ -59,7 +58,7 @@ protected:
 
     void request(HttpRequest::Type method, std::string segments, std::vector<std::string> query);
     void request(HttpRequest::Type method, std::string segments, std::vector<std::string> query, std::string upload);
-    void onHttpRequestCompleted(HttpClient * client, HttpResponse * response);
+    void onHttpRequestCompleted(HttpClient *client, HttpResponse *response);
 
     std::string getPlatform();
     std::string getDeviceId();
