@@ -32,7 +32,7 @@ To start the server execute the following commands:
 ```bash
 cd ColyseusServer
 npm install
-npm run dev
+npm start
 ```
 
 or simply:
