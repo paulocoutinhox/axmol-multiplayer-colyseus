@@ -36,7 +36,7 @@ bool MainScene::init() {
     // connect to the server
     client = new Client("ws://192.168.0.113:3000");
 
-    client->joinOrCreate<RoomStateSchema>("my_room", {}, [this](MatchMakeError *error, Room<RoomStateSchema> *room) {
+    client->joinOrCreate<RoomStateSchema>("game", {}, [this](MatchMakeError *error, Room<RoomStateSchema> *room) {
         if (error) {
             // handle error
             return;
@@ -112,7 +112,7 @@ void MainScene::onStateChange(RoomStateSchema *state) {
             playerSprites[playerId] = sprite;
         }
 
-        playerSprites[playerId]->setPosition(Vec2(playerData->x, playerData->y));
+        playerSprites[playerId]->setPosition(Vec2(playerData->position->x, playerData->position->y));
     }
 
     // remove disconnected players

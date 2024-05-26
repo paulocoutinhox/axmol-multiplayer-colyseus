@@ -107,5 +107,5 @@ start-wasm:
 start-colyseus:
 	cd ColyseusServer && \
 	  npm install && \
-	  npm run dev
+	  npm start
 
