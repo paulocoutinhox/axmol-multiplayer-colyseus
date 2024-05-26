@@ -106,13 +106,18 @@ void MainScene::onStateChange(RoomStateSchema *state) {
         const std::string &playerId = kv.first;
         PlayerSchema *playerData = kv.second;
 
-        if (playerSprites.find(playerId) == playerSprites.end()) {
+        // create sprite for other players
+        if (playerId != this->room->sessionId && playerSprites.find(playerId) == playerSprites.end()) {
             auto sprite = Sprite::create("player.png");
+            sprite->setContentSize(Vec2(100, 100));
             this->addChild(sprite);
             playerSprites[playerId] = sprite;
         }
 
-        playerSprites[playerId]->setPosition(Vec2(playerData->position->x, playerData->position->y));
+        // update position of other players
+        if (playerId != this->room->sessionId) {
+            playerSprites[playerId]->setPosition(Vec2(playerData->position->x, playerData->position->y));
+        }
     }
 
     // remove disconnected players
@@ -164,8 +169,8 @@ void MainScene::update(float delta) {
 
             // send movement data to server if room is connected
             if (room) {
-                //                std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
-                //                room->send("move", movementData);
+                std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
+                room->send("move", movementData);
             }
         }
     }
@@ -184,8 +189,8 @@ void MainScene::onTouchEnded(Touch *touch, Event *event) {
 
         // send movement data to server if room is connected
         if (room) {
-            //            std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
-            //            room->send("move", movementData);
+            std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
+            room->send("move", movementData);
         }
     }
 }

@@ -428,7 +428,28 @@ class Schema
             // TODO: for backwards compatibility, check existance of field before calling .at()
             string field = this->_indexes.at(index);
             string type = this->_types.at(index);
+            
+            /*
+            // TODO: for backwards compatibility, check existance of field before calling .at()
+            std::string field = "";
+            std::string type = "";
 
+            auto itField = _indexes.find(index);
+            if (itField != _indexes.end()) {
+                field = itField->second;
+            }
+
+            auto itType = _types.find(index);
+            if (itType != _types.end()) {
+                type = itType->second;
+            }
+
+            if (field.empty() && type.empty()) {
+                it->offset++;
+                continue;
+            }
+            */
+            
             bool hasChange = false;
 
             if (isNil)

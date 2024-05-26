@@ -10,4 +10,5 @@ enum class Protocol : int {
     ROOM_STATE = 14,
     ROOM_STATE_PATCH = 15,
     ROOM_DATA_SCHEMA = 16,
+    ROOM_DATA_BYTES = 17,
 };

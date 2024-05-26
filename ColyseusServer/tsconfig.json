@@ -5,7 +5,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
   },
   "include": [
     "src/**/*.ts"

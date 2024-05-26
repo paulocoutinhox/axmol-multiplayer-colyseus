@@ -1,7 +1,7 @@
-import { Room, Client } from "colyseus";
+import { Client, Room } from "colyseus";
 
-import { StateHandler } from "./StateHandler";
 import { Player } from "../entities/Player";
+import { StateHandler } from "./StateHandler";
 
 export class GameRoom extends Room<StateHandler> {
     maxClients = 8;
@@ -16,6 +16,17 @@ export class GameRoom extends Room<StateHandler> {
             this.state.players.get(client.sessionId).abc = "xyz";
         });
         */
+
+        this.onMessage("move", (client, message) => {
+            const player = this.state.players.get(client.sessionId);
+
+            if (player) {
+                player.position.x = message.x;
+                player.position.y = message.y;
+
+                this.state.players.set(client.sessionId, player);
+            }
+        });
     }
 
     onJoin(client) {
