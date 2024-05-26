@@ -1,0 +1,17 @@
+# Source code
+file(GLOB_RECURSE GAME_HEADER
+    ${CMAKE_CURRENT_LIST_DIR}/**/*.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/**/*.h
+)
+
+file(GLOB_RECURSE GAME_SOURCE
+    ${CMAKE_CURRENT_LIST_DIR}/**/*.cpp
+)
+
+# Include directories
+set(GAME_INC_DIRS ${CMAKE_CURRENT_LIST_DIR})
+
+# Propagate the variables to the parent scope
+set(GAME_HEADER ${GAME_HEADER} PARENT_SCOPE)
+set(GAME_SOURCE ${GAME_SOURCE} PARENT_SCOPE)
+set(GAME_INC_DIRS ${GAME_INC_DIRS} PARENT_SCOPE)

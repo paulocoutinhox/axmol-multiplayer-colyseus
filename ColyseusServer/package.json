@@ -1,0 +1,22 @@
+{
+  "name": "colyseus-server",
+  "version": "1.0.0",
+  "description": "Colyseus server for multiplayer game with Axmol",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "prod": "NODE_ENV=production node index.js"
+  },
+  "dependencies": {
+    "@colyseus/schema": "2.0.32",
+    "colyseus": "0.15.17",
+    "express": "4.19.2",
+    "http": "0.0.1-security"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.1"
+  },
+  "author": "Paulo Coutinho",
+  "license": "MIT"
+}
