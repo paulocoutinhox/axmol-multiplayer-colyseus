@@ -178,7 +178,7 @@ void MainScene::update(float delta) {
 }
 
 bool MainScene::onTouchBegan(Touch *touch, Event *event) {
-    // Returning true to indicate that we have handled the touch event
+    // returning true to indicate that we have handled the touch event
     return true;
 }
 
