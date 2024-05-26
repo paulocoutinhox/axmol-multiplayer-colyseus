@@ -10,6 +10,7 @@ These are the new files that you need:
 
 - /ColyseusLib
 - /ColyseusServer
+- /Source/ColyseusData
 
 ## Code Changes
 
@@ -21,6 +22,12 @@ There are some small changes that you need do to your project to include this.
 
 ```cmake
 add_subdirectory(ColyseusLib)
+```
+
+2 - Add flag to disable boost:
+
+```cmake
+target_compile_definitions(${APP_NAME} PUBLIC MSGPACK_NO_BOOST)
 ```
 
 ## Game Server
