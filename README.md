@@ -24,7 +24,7 @@ There are some small changes that you need do to your project to include this.
 add_subdirectory(ColyseusLib)
 ```
 
-2 - Add flag to disable boost:
+2 - Add flag to disable Boost:
 
 ```cmake
 target_compile_definitions(${APP_NAME} PUBLIC MSGPACK_NO_BOOST)
