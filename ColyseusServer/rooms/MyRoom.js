@@ -13,14 +13,14 @@ class MyRoom extends colyseus.Room {
                 player.y = message.y;
             }
         });
+    }
 
-        this.onJoin((client, options) => {
-            this.state.players.set(client.sessionId, new Player());
-        });
+    onJoin(client, options) {
+        this.state.players.set(client.sessionId, new Player());
+    }
 
-        this.onLeave((client, consented) => {
-            this.state.players.delete(client.sessionId);
-        });
+    onLeave(client, consented) {
+        this.state.players.delete(client.sessionId);
     }
 }
 
