@@ -10,8 +10,8 @@ class Player extends Schema {
 }
 
 schema.defineTypes(Player, {
-    x: 'number',
-    y: 'number'
+    x: "number",
+    y: "number"
 });
 
 module.exports = Player;

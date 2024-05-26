@@ -9,9 +9,10 @@ using namespace colyseus::schema;
 
 class RoomStateSchema : public Schema {
 public:
-    MapSchema<PlayerSchema *> *players = new MapSchema<PlayerSchema *>();
+    MapSchema<PlayerSchema *> *players;
 
     RoomStateSchema() {
+        this->players = new MapSchema<PlayerSchema *>();
         this->_indexes = {{0, "players"}};
         this->_types = {{0, "map"}};
         this->_childPrimitiveTypes = {};
@@ -23,22 +24,22 @@ public:
     }
 
 protected:
-    inline MapSchema<char *> *getMap(const std::string &field) {
+    inline MapSchema<char *> *getMap(const std::string &field) override {
         if (field == "players") {
-            return (MapSchema<char *> *)this->players;
+            return reinterpret_cast<MapSchema<char *> *>(this->players);
         }
         return Schema::getMap(field);
     }
 
-    inline void setMap(const std::string &field, MapSchema<char *> *value) {
+    inline void setMap(const std::string &field, MapSchema<char *> *value) override {
         if (field == "players") {
-            this->players = (MapSchema<PlayerSchema *> *)value;
+            this->players = reinterpret_cast<MapSchema<PlayerSchema *> *>(value);
             return;
         }
-        return Schema::setMap(field, value);
+        Schema::setMap(field, value);
     }
 
-    inline Schema *createInstance(std::type_index type) {
+    inline Schema *createInstance(std::type_index type) override {
         if (type == typeid(PlayerSchema)) {
             return new PlayerSchema();
         }

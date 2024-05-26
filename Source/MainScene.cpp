@@ -164,8 +164,8 @@ void MainScene::update(float delta) {
 
             // send movement data to server if room is connected
             if (room) {
-                std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
-                room->send("move", movementData);
+                //                std::map<std::string, float> movementData = {{"x", pos.x}, {"y", pos.y}};
+                //                room->send("move", movementData);
             }
         }
     }
@@ -184,8 +184,8 @@ void MainScene::onTouchEnded(Touch *touch, Event *event) {
 
         // send movement data to server if room is connected
         if (room) {
-            std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
-            room->send("move", movementData);
+            //            std::map<std::string, float> movementData = {{"x", touchLocation.x}, {"y", touchLocation.y}};
+            //            room->send("move", movementData);
         }
     }
 }

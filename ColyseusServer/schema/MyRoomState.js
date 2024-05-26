@@ -1,6 +1,7 @@
 const schema = require('@colyseus/schema');
 const Schema = schema.Schema;
 const MapSchema = schema.MapSchema;
+
 const Player = require('./Player');
 
 class MyRoomState extends Schema {
