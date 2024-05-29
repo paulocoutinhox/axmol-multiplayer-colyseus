@@ -4,7 +4,7 @@
 ROOT_DIR=${PWD}
 
 PROJ=axmol-multiplayer
-GITHUB_REPO=paulocoutinhox/${PROJ}
+GITHUB_REPO=paulocoutinhox/${PROJ}-colyseus
 
 help:
 	@echo "Type: make [rule]. Available options are:"
