@@ -2,7 +2,7 @@
 
 This is a project that shows how to create a simple multiplayer game with Colyseus library.
 
-Web demo: https://axmp.netlify.app/
+Web demo: https://axmp-colyseus.netlify.app/
 
 ## Files To Add
 
