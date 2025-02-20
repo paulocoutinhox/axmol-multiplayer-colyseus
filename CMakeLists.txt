@@ -33,6 +33,14 @@ if(XCODE)
     set(CMAKE_XCODE_GENERATE_TOP_LEVEL_PROJECT_ONLY TRUE)
 endif()
 
+# extensions
+set(AX_ENABLE_EXT_LUA OFF CACHE BOOL "the lua extension" FORCE)
+set(AX_ENABLE_EXT_SPINE OFF CACHE BOOL "the spine extension" FORCE)
+set(AX_ENABLE_EXT_PARTICLE3D OFF CACHE BOOL "the particle3d extension" FORCE)
+set(AX_ENABLE_EXT_DRAGONBONES OFF CACHE BOOL "the dragonbones extension" FORCE)
+set(AX_ENABLE_EXT_COCOSTUDIO OFF CACHE BOOL "the cocosstudio extension for load .csb" FORCE)
+set(AX_ENABLE_EXT_LIVE2D OFF CACHE BOOL "the live2d extension" FORCE)
+
 # config quick starter batch script run.bat for windows
 if(WIN32)
     file(RELATIVE_PATH CMAKE_BUILD_RELATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
@@ -70,7 +78,7 @@ if (NOT _AX_USE_PREBUILT)
     add_subdirectory(${_AX_ROOT}/core ${ENGINE_BINARY_PATH}/axmol/core)
 endif()
 
-# The common cross-platforms source files and header files
+# the common cross-platforms source files and header files
 file(GLOB_RECURSE GAME_HEADER
     Source/*.h Source/*.hpp
     )
@@ -176,11 +184,7 @@ else()
     add_library(${APP_NAME} SHARED ${APP_SOURCES})
     # whole archive for jni
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
-    config_android_shared_libs("org.axmol.lib" "${CMAKE_CURRENT_SOURCE_DIR}/proj.android/app/src")
-endif()
-
-if (NOT _AX_USE_PREBUILT)
-    target_link_libraries(${APP_NAME} ${_AX_CORE_LIB})
+    config_android_shared_libs("dev.axmol.lib" "${CMAKE_CURRENT_SOURCE_DIR}/proj.android/app/src")
 endif()
 
 # The optional thirdparties(not dependent by engine)
@@ -195,6 +199,9 @@ target_compile_definitions(${APP_NAME} PUBLIC MSGPACK_NO_BOOST)
 
 # mark app resources, resource will be copy auto after mark
 ax_setup_app_config(${APP_NAME})
+if (NOT _AX_USE_PREBUILT)
+    target_link_libraries(${APP_NAME} ${_AX_CORE_LIB})
+endif()
 
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
@@ -212,7 +219,7 @@ if(APPLE)
         set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2")
     endif()
 
-    # For code-signing, set the DEVELOPMENT_TEAM:
+    # for code-signing, set the DEVELOPMENT_TEAM:
     #set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "GRLXXXX2K9")
 elseif(WINDOWS)
     if(NOT _AX_USE_PREBUILT)
