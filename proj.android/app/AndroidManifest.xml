@@ -5,23 +5,25 @@
     <uses-feature android:glEsVersion="0x00020000" />
 
     <application
-        android:label="@string/app_name"
+        android:name="dev.axmol.app.MainApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name">
 
         <!-- Tell AxmolActivity the name of our .so -->
-        <meta-data android:name="android.app.lib_name"
-                   android:value="axmol-multiplayer" />
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="axmol-multiplayer" />
 
         <activity
-            android:name="org.axmol.app.AppActivity"
-            android:screenOrientation="portrait"
+            android:name="dev.axmol.app.AppActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:exported="true"  >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,6 +32,6 @@
         </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -2,24 +2,28 @@ apply plugin: 'com.android.application'
 apply from: project(':libaxmol').projectDir.toString() + "/axutils.gradle"
 
 android {
-    namespace "com.axmol.multiplayer"
-    compileSdk PROP_COMPILE_SDK_VERSION.toInteger()
+    // Resolve build profiles
+    def buildProfiles = AxmolUtils.resolveBuildProfiles(project)
+    def packageName = buildProfiles['packageName']
+    def cmakeVer = buildProfiles['cmakeVer']
+    def cmakeOptions = Eval.me(buildProfiles['cmakeOptions'])
+    def minSdk = buildProfiles['minSdk']
+    def targetSdk = buildProfiles['targetSdk']
 
-    // Setup native build tools: ndk & cmake
-    def nbtInfo = axutils.findNativeBuildTools(project, '3.28.1+')
-    ndkVersion = nbtInfo[0]
-    if(nbtInfo[1]) {
-        ndkPath = nbtInfo[1]
+    // Apply build profiles
+    namespace packageName
+    compileSdk targetSdk.toInteger()
+    ndkVersion = buildProfiles['ndkVer']
+    if(buildProfiles.containsKey('ndkPath')) {
+        ndkPath = buildProfiles['ndkPath']
     }
-    def cmakeVer = nbtInfo[2]
-    def cmakeOptions = Eval.me(nbtInfo[3])
 
     defaultConfig {
-        applicationId "com.axmol.multiplayer"
-        minSdkVersion PROP_MIN_SDK_VERSION
-        targetSdkVersion PROP_TARGET_SDK_VERSION
+        applicationId packageName
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         externalNativeBuild {
             cmake {
@@ -80,7 +84,7 @@ android {
     }
 
     aaptOptions {
-       noCompress 'mp3','ogg','wav','mp4','ttf','ttc'
+       noCompress 'mp3','ogg','wav','mp4','ttf','ttc','otf'
     }
 
     buildFeatures {
@@ -111,6 +115,7 @@ android.applicationVariants.configureEach { variant ->
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':libaxmol')
+    implementation 'androidx.annotation:annotation:1.9.1'
 }
 
 project.afterEvaluate {

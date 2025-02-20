@@ -50,7 +50,7 @@ build-macos:
 
 build-wasm:
 	rm -rf build_wasm/
-	axmol build -p wasm
+	axmol build -p wasm -xb "--target, axmol-multiplayer"
 	cd build_wasm && make
 	cp build_wasm/bin/${PROJ}/${PROJ}.html build_wasm/bin/${PROJ}/index.html
 
