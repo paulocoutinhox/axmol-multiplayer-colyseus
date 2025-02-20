@@ -22,7 +22,7 @@ These are the new files that you need:
 
 ## Code Changes
 
-There are some small changes that you need do to your project to include this.
+If you want add Colyseus C++ SDK to your project, there are some small changes that you need do to your project to include it:
 
 ### CMake root file: CMakeLists.txt
 
