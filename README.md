@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/paulocoutinhox/axmol-multiplayer-colyseus" target="_blank" rel="noopener noreferrer">
-        <img width="180" src="extras/images/colyseus-logo.png" alt="Logo">
+        <img width="220" src="extras/images/colyseus-logo.png" alt="Logo">
     </a>
 </p>
 
