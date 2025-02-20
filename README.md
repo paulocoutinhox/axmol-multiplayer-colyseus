@@ -1,3 +1,11 @@
+<p align="center">
+    <a href="https://github.com/paulocoutinhox/axmol-multiplayer-colyseus" target="_blank" rel="noopener noreferrer">
+        <img width="180" src="extras/images/colyseus-logo.png" alt="Logo">
+    </a>
+</p>
+
+<br>
+
 # Axmol Multiplayer With Colyseus
 
 This is a project that shows how to create a simple multiplayer game with Colyseus library.
